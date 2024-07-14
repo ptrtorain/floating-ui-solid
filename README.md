@@ -4,7 +4,10 @@
 <p align="center">
   <img src="https://i.imgur.com/l8VYgtb.png" alt="Floating UI Solid">
 <p>
+
+<p align="center">
 A lightweight and efficient Floating UI implementation for SolidJS.
+<p>
 
 ## Why choose floating-ui-solid?
 
