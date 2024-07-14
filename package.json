@@ -1,0 +1,32 @@
+{
+  "name": "floating-ui-solid",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup src/index.ts --format cjs, esm --dts",
+    "lint": "biome lint"
+  },
+  "keywords": [
+    "solid",
+    "floating-ui",
+    "solidjs",
+    "positioning",
+    "tooltip"
+  ],
+  "author": "rainyEra",
+  "license": "MIT",
+  "description": "",
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
+    "solid-js": "^1.8.18",
+    "tsup": "^8.1.0",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@floating-ui/dom": "^1.6.7"
+  }
+}
