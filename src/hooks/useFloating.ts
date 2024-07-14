@@ -15,7 +15,7 @@ export const useFloating = ({
 	isOpen,
 	middleware = [],
 	whileElementsMounted,
-	transform = false,
+	transform = true,
 }: useFloatingProps) => {
 	const [reference, setReference] = createSignal<FloatingElement>(null);
 	const [floating, setFloating] = createSignal<FloatingElement>(null);
@@ -45,9 +45,9 @@ export const useFloating = ({
 	function update() {
 		const refrenceEl = reference();
 		const floatingEl = floating();
-		data().middlewareData;
-		data().placement;
-		data().strategy;
+		whileElementsMounted;
+		strategyProps();
+		placementProps();
 
 		if (refrenceEl && floatingEl) {
 			computePosition(refrenceEl, floatingEl, {
