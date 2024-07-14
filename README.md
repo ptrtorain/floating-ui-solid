@@ -1,10 +1,10 @@
 # floating-ui-solid
 
 [![NPM](https://img.shields.io/npm/v/floating-ui-solid)](https://www.npmjs.com/package/floating-ui-solid)
-
-![Logo](https://i.imgur.com/l8VYgtb.png)
+<p align="center">
+  <img src="https://i.imgur.com/l8VYgtb.png" alt="Floating UI Solid">
+<p>
 A lightweight and efficient Floating UI implementation for SolidJS.
-
 ## Why choose floating-ui-solid?
 
 - 📦 Smaller bundle size
