@@ -1,15 +1,19 @@
 {
   "name": "floating-ui-solid",
-  "version": "1.0.0",
+  "version": "1.0.5",
+  "type": "module",
   "main": "./src/index.ts",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --treeshake",
+    "build:prod": "tsup src/index.ts --format esm,cjs --dts --treeshake --minify",
+    "prepublishOnly": "npm run build:prod",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsup src/index.ts --format cjs, esm --dts",
     "lint": "biome lint"
   },
+  
   "keywords": [
     "solid",
     "floating-ui",
@@ -19,7 +23,7 @@
   ],
   "author": "rainyEra",
   "license": "MIT",
-  "description": "",
+  "description": "Floating UI Primitives for SolidJS",
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
     "solid-js": "^1.8.18",

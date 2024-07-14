@@ -13,8 +13,8 @@ export {
 	platform,
 	shift,
 	size,
-} from '@floating-ui/dom'
+} from '@floating-ui/dom';
 
-export * from './types'
+export * from './types';
 
-export { useFloating } from './hooks/useFloating'
+export { useFloating } from './hooks/useFloating';

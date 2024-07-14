@@ -1,13 +1,11 @@
 import { createEffect, createSignal } from 'solid-js';
-import {
-	computePosition,
-	ComputePositionReturn,
-	Middleware,
-} from '@floating-ui/dom';
+import { computePosition } from '@floating-ui/dom';
 import { getDPR, roundByDPR } from '../utils';
-import type {
+import {
 	CSSProperties,
+	Data,
 	FloatingElement,
+	MiddlewareType,
 	useFloatingProps,
 } from '../types';
 
@@ -23,8 +21,7 @@ export const useFloating = ({
 	const [floating, setFloating] = createSignal<FloatingElement>(null);
 	const [isPositioned, setIsPositioned] = createSignal(false);
 
-	const middlewareProps: () => Array<Middleware | null | undefined | false> =
-		() => middleware;
+	const middlewareProps: () => MiddlewareType = () => middleware;
 	const strategyProps = () => strategy;
 	const placementProps = () => placement;
 
@@ -36,13 +33,11 @@ export const useFloating = ({
 
 	let whileElementsMountedCleanup: (() => void) | undefined;
 
-	const [data, setData] = createSignal<
-		ComputePositionReturn & { isPositioned: boolean }
-	>({
+	const [data, setData] = createSignal<Data>({
 		x: 0,
 		y: 0,
 		strategy: strategyProps(),
-		middlewareData: () => middlewareProps() as Middleware[],
+		middlewareData: {},
 		placement: placementProps(),
 		isPositioned: false,
 	});

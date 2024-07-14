@@ -7,6 +7,6 @@
     "strict": true, /* Enable all strict type-checking options. */
     "skipLibCheck": true, /* Skip type checking all .d.ts files. */
     "noEmit": false, /* Disable emitting files from a compilation. */
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
   }
 }

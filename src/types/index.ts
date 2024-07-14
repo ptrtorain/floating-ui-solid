@@ -1,16 +1,17 @@
 import {
+	ComputePositionReturn,
 	Middleware,
-	MiddlewareData,
 	Placement,
 	Strategy,
 } from '@floating-ui/dom';
 import { JSX } from 'solid-js/jsx-runtime';
 
+export type MiddlewareType = Array<Middleware | null | undefined | false>;
 export interface useFloatingProps {
 	placement?: Placement;
 	strategy?: Strategy;
 	isOpen: () => boolean;
-	middleware?: Array<Middleware | null | undefined | false>;
+	middleware?: MiddlewareType;
 	whileElementsMounted?: (
 		refrence: HTMLElement,
 		floating: HTMLElement,
@@ -18,14 +19,7 @@ export interface useFloatingProps {
 	) => () => void;
 	transform?: boolean;
 }
-export type Data = {
-	x: number;
-	y: number;
-	strategy: Strategy;
-	placement: Placement;
-	isPositioned: boolean;
-	middlewareData: MiddlewareData;
-};
+export type Data = ComputePositionReturn & { isPositioned: boolean };
 
 export type FloatingElement = HTMLElement | null | undefined;
 
