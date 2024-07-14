@@ -5,6 +5,7 @@
   <img src="https://i.imgur.com/l8VYgtb.png" alt="Floating UI Solid">
 <p>
 A lightweight and efficient Floating UI implementation for SolidJS.
+
 ## Why choose floating-ui-solid?
 
 - 📦 Smaller bundle size
