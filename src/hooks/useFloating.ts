@@ -45,6 +45,9 @@ export const useFloating = ({
 	function update() {
 		const refrenceEl = reference();
 		const floatingEl = floating();
+		data().middlewareData;
+		data().placement;
+		data().strategy;
 
 		if (refrenceEl && floatingEl) {
 			computePosition(refrenceEl, floatingEl, {

@@ -1,67 +1,112 @@
 # floating-ui-solid
 
+[![NPM](https://img.shields.io/npm/v/floating-ui-solid)](https://www.npmjs.com/package/floating-ui-solid)
+
+A lightweight and efficient Floating UI implementation for SolidJS.
+
+## Why choose floating-ui-solid?
+
+- 📦 Smaller bundle size
+- 🧹 Proper cleanup: cleanup function with autoUpdate is properly handled
+- 💪 Improved TypeScript support
+- 🤖 Better API
+
 ## Installation
 
+Choose your preferred package manager:
+
 ```bash
-npm i floating-ui-solid
-```
-```bash
+npm install floating-ui-solid
+# or
 yarn add floating-ui-solid
+# or
+pnpm add floating-ui-solid
+# or
+bun add floating-ui-solid
 ```
-```bash
-pnpm i floating-ui-solid
-```
-
-```bash
-bun add floating-ui-solid`
-```
-
 
 ## Usage
 
-```js
+Here's a basic example of how to use floating-ui-solid:
+
+```jsx
+import { createSignal } from 'solid-js';
 import { useFloating } from 'floating-ui-solid';
 
 export default function App() {
   const [isOpen, setIsOpen] = createSignal(false);
-  const { x, y, refs, floatingStyles } = useFloating({
+  const { refs, floatingStyles } = useFloating({
     placement: "bottom",
     isOpen: isOpen,
     strategy: "absolute",
   });
 
   return (
-    <>
-      <main>
-        <div>
-          <div
-            onMouseEnter={() => setIsOpen(true)}
-            onMouseLeave={() => setIsOpen(false)} class="reference"
-            ref={refs.setReference}>
-            Hover me
-          </div>
+    <main>
+      <div
+        ref={refs.setReference}
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
+        class="reference"
+      >
+        Hover me
+      </div>
+      {isOpen() && (
+        <div
+          ref={refs.setFloating}
+          style={floatingStyles()}
+          class="float"
+        >
+          Floating
         </div>
-        {isOpen() && <div ref={refs.setFloating} style={{ ...floatingStyles() }} class="float">Floating</div>}
-      </main >
-    </>
+      )}
+    </main>
   );
 }
 ```
 
-### autoUpdate
-```js
-import {autoUpdate} from 'floating-ui-solid';
+### Using autoUpdate
 
-  const { x, y, refs, floatingStyles } = useFloating({
-    placement: "bottom",
-    isOpen: isOpen,
-    strategy: "absolute",
-    whileElementsMounted: autoUpdate,
-    // or
-    whileElementsMounted: (reference, floating, update) => {
-        const cleanup = autoUpdate(reference, floating, update, {elementResize: true});
-        return cleanup;
-    },
-  });
+To keep the floating element positioned correctly when the reference element changes, use the `autoUpdate` function:
 
+```jsx
+import { autoUpdate, useFloating } from 'floating-ui-solid';
+
+const { refs, floatingStyles } = useFloating({
+  placement: "bottom",
+  isOpen: isOpen,
+  strategy: "absolute",
+  whileElementsMounted: autoUpdate,
+  // or for more control:
+  whileElementsMounted: (reference, floating, update) => {
+    const cleanup = autoUpdate(reference, floating, update, { elementResize: true });
+    return cleanup;
+  },
+});
 ```
+
+### Applying Custom Styles
+
+You can apply custom styles to the floating element using middleware:
+
+```jsx
+import { autoUpdate, useFloating, size, offset } from 'floating-ui-solid';
+
+const { refs, floatingStyles, setStyles } = useFloating({
+  placement: "bottom",
+  isOpen: isOpen,
+  strategy: "absolute",
+  middleware: [
+    offset(10),
+    size({
+      apply({ availableHeight }) {
+        setStyles({ ...floatingStyles(), maxHeight: `${availableHeight}px` });
+      }
+    })
+  ],
+});
+```
+
+## License
+
+This project is licensed under the MIT License.

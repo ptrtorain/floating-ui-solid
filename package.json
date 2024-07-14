@@ -1,19 +1,19 @@
 {
   "name": "floating-ui-solid",
-  "version": "1.0.5",
+  "version": "1.0.17",
   "type": "module",
-  "main": "./src/index.ts",
+  "main": "./dist/index.js", 
+  "types": "./dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --treeshake",
-    "build:prod": "tsup src/index.ts --format esm,cjs --dts --treeshake --minify",
+    "build": "tsup src/index.ts --format esm --dts --treeshake",
+    "build:prod": "tsup src/index.ts --format esm --dts --treeshake --minify",
     "prepublishOnly": "npm run build:prod",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "biome lint"
   },
-  
   "keywords": [
     "solid",
     "floating-ui",
@@ -22,6 +22,10 @@
     "tooltip"
   ],
   "author": "rainyEra",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rainyEra/floating-ui-solid"
+  },
   "license": "MIT",
   "description": "Floating UI Primitives for SolidJS",
   "devDependencies": {
