@@ -1,8 +1,11 @@
 {
   "name": "floating-ui-solid",
-  "version": "1.0.45",
+  "version": "1.0.46",
   "type": "module",
   "source": "./src/index.tsx",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
   ],

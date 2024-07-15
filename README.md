@@ -59,7 +59,7 @@ export default function App() {
       {isOpen() && (
         <div
           ref={refs.setFloating}
-          style={floatingStyles()}
+          style={...floatingStyles()}
           class="float"
         >
           Floating
