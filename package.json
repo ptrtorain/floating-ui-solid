@@ -1,29 +1,32 @@
 {
   "name": "floating-ui-solid",
-  "version": "1.0.41",
+  "version": "1.0.45",
   "type": "module",
-  "types": "./src/types/index.ts",
-  "main": "./src/index.ts",
+  "source": "./src/index.tsx",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "publishConfig": {
     "access": "public"
   },
   "exports": {
     ".": {
-      "import": "./src/index.ts", 
-      "types": "./src/types/index.ts"
+      "solid": "./dist/source/index.jsx",
+      "import": "./dist/esm/index.js",
+      "browser": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.cjs",
+      "node": "./dist/cjs/index.cjs",
+      "types": "./dist/types/index.d.ts"
     }
   },
   "scripts": {
-    "build": "tsup",
-    "build:prod": "tsup",
+    "build": "rollup -c --no-sourcemap",
+    "build:prod": "rollup -c --no-sourcemap",
     "prepublishOnly": "npm run build:prod",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "biome lint"
   },
+  "sideEffects": false,
   "keywords": [
     "solid",
     "floatingui",
@@ -38,13 +41,19 @@
   },
   "license": "MIT",
   "description": "Floating UI Primitives for SolidJS",
+  "peerDependencies": {
+    "solid-js": "^1.8.18"
+  },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
-    "solid-js": "^1.8.18",
-    "tsup": "^8.1.0",
+    "rollup": "^3.29.4",
+    "rollup-preset-solid": "^2.0.1",
+    "tslib": "^2.6.3",
     "typescript": "^5.5.3"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.6.7"
-  }
+  },
+  "browser": {},
+  "typesVersions": {}
 }

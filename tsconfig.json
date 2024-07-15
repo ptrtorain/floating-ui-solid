@@ -1,12 +1,22 @@
 {
   "compilerOptions": {
-    "target": "es2016", /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-    "module": "commonjs", /* Specify what module code is generated. */
+    "strict": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true, /* Ensure that casing is correct in imports. */
-    "strict": true, /* Enable all strict type-checking options. */
-    "skipLibCheck": true, /* Skip type checking all .d.ts files. */
-    "noEmit": false, /* Disable emitting files from a compilation. */
+    "noEmit": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
     "noUncheckedIndexedAccess": true,
-  }
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "types": [],
+    "baseUrl": "."
+  },
+  "exclude": ["node_modules", "dist", "./dev"]
 }
