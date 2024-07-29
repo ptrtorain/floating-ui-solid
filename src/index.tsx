@@ -13,8 +13,8 @@ export {
 	shift,
 	size,
 } from '@floating-ui/dom';
- export function arrow({element, padding}: {element: HTMLElement, padding: number}) {
-	return arrowInternal({ element: element as Element, padding: padding });
+ export function arrow({element, padding}: {element: HTMLElement | null | undefined, padding?: number}) {
+	return arrowInternal({ element: element as Element, padding: padding ?? 0 });
 }
 export * from './types';
 export { useFloating } from './hooks/useFloating';

@@ -97,18 +97,20 @@ You can apply custom styles to the floating element using middleware:
 ```jsx
 import { autoUpdate, useFloating, size, offset } from 'floating-ui-solid';
 
+const [reactiveMiddleware, setReactiveMiddleware] = createSignal([
+    offset(10),
+    size({
+      apply({ availableHeight }) {
+        setFloatingStyles({ ...floatingStyles(), "max-height": `${availableHeight}px` });
+      }
+    })
+  ]);
+
 const { refs, floatingStyles, setFloatingStyles } = useFloating({
   placement: "bottom",
   isOpen: isOpen,
   strategy: "absolute",
-  middleware: [
-    offset(10),
-    size({
-      apply({ availableHeight }) {
-        setFloatingStyles({ ...floatingStyles(), maxHeight: `${availableHeight}px` });
-      }
-    })
-  ],
+  middleware: reactiveMiddleware,
 });
 ```
 ### Arrow Element

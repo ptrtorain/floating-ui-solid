@@ -1,8 +1,8 @@
 {
   "name": "floating-ui-solid",
-  "version": "1.0.48",
+  "version": "1.0.50",
   "type": "module",
-  "source": "./src/index.tsx",
+  "source": ".dist/source/index.jsx",  
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
@@ -32,10 +32,11 @@
   "sideEffects": false,
   "keywords": [
     "solid",
-    "floatingui",
     "solidjs",
+    "solid-js",
     "positioning",
-    "tooltip"
+    "tooltip",
+    "floating-ui"
   ],
   "author": "rainyEra",
   "repository": {
