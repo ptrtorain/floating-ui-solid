@@ -1,6 +1,6 @@
 {
   "name": "floating-ui-solid",
-  "version": "1.0.46",
+  "version": "1.0.48",
   "type": "module",
   "source": "./src/index.tsx",
   "main": "./dist/cjs/index.cjs",

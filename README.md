@@ -60,7 +60,7 @@ export default function App() {
         <div
           ref={refs.setFloating}
           style={...floatingStyles()}
-          class="float"
+          class="floating"
         >
           Floating
         </div>
@@ -97,7 +97,7 @@ You can apply custom styles to the floating element using middleware:
 ```jsx
 import { autoUpdate, useFloating, size, offset } from 'floating-ui-solid';
 
-const { refs, floatingStyles, setStyles } = useFloating({
+const { refs, floatingStyles, setFloatingStyles } = useFloating({
   placement: "bottom",
   isOpen: isOpen,
   strategy: "absolute",
@@ -105,13 +105,55 @@ const { refs, floatingStyles, setStyles } = useFloating({
     offset(10),
     size({
       apply({ availableHeight }) {
-        setStyles({ ...floatingStyles(), maxHeight: `${availableHeight}px` });
+        setFloatingStyles({ ...floatingStyles(), maxHeight: `${availableHeight}px` });
       }
     })
   ],
 });
 ```
+### Arrow Element
 
+```jsx
+import { autoUpdate, useFloating, arrow } from 'floating-ui-solid';
+const [reactiveMiddleware, setReactiveMiddleware] = createSignal([]);
+const { refs, floatingStyles, setFloatingStyles } = useFloating({
+  placement: "bottom",
+  isOpen: isOpen,
+  strategy: "absolute",
+  middleware: reactiveMiddleware,
+});
+
+  return (
+        <div>
+            <div
+                onMouseEnter={() => setIsOpen(true)}
+                onMouseLeave={() => setIsOpen(false)}
+                class="reference"
+                ref={refs.setReference}
+            >
+                Reference
+            </div>
+
+            {isOpen() && (
+                <div class="floating" style={{ ...floatingStyles() }} ref={refs.setFloating}>
+                    Floating
+                    <div
+                        class="arrow"
+                        style={{
+                            position: 'absolute',
+                            left: middleware()?.arrow?.x != null ? `${middleware().arrow?.x}px` : '',
+                            top: arrowState()?.offsetHeight != null ? `${-arrowState()?.offsetHeight! / 2}px` : '',
+                        }}
+                        ref={(node) => {
+                            setArrow(node)
+                            setReactiveMiddleware((prev) => [...prev, arrow({ element: node })]); // set it once it's ready
+                        }}
+                    ></div>
+                </div>
+            )}
+        </div>
+    )
+```
 ## License
 
 This project is licensed under the MIT License.

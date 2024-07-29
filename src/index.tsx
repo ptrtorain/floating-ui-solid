@@ -1,11 +1,10 @@
+import { arrow as arrowInternal } from '@floating-ui/dom';
+
 export {
-	arrow,
 	autoPlacement,
 	autoUpdate,
-	computePosition,
 	detectOverflow,
 	flip,
-	getOverflowAncestors,
 	hide,
 	inline,
 	limitShift,
@@ -14,7 +13,8 @@ export {
 	shift,
 	size,
 } from '@floating-ui/dom';
-
+ export function arrow({element, padding}: {element: HTMLElement, padding: number}) {
+	return arrowInternal({ element: element as Element, padding: padding });
+}
 export * from './types';
-
 export { useFloating } from './hooks/useFloating';
