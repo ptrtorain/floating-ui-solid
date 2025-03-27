@@ -15,8 +15,13 @@
     "noUncheckedIndexedAccess": true,
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
-    "types": [],
-    "baseUrl": "."
+    "types": ["vite/client", "@testing-library/jest-dom"],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "./src/*"
+      ]
+    }
   },
   "exclude": ["node_modules", "dist", "./dev"]
 }

@@ -4,6 +4,7 @@ import {
 	Placement,
 	Strategy,
 } from '@floating-ui/dom';
+import { Accessor } from 'solid-js';
 
 import { JSX } from 'solid-js/jsx-runtime';
 
@@ -13,12 +14,16 @@ export interface useFloatingProps {
 	placement?: Placement;
 	strategy?: Strategy;
 	isOpen: () => boolean;
-	middleware?: (() => MiddlewareType) | undefined;
+	middleware?: (() => MiddlewareType) | MiddlewareType | undefined;
 	whileElementsMounted?: (
 		refrence: HTMLElement,
 		floating: HTMLElement,
 		update: () => void,
 	) => () => void;
+	elements?: {
+		reference:  Accessor<FloatingElement>;
+		floating: Accessor<FloatingElement>;
+	}
 	transform?: boolean;
 }
 export type Data = ComputePositionReturn & { isPositioned: boolean };

@@ -9,11 +9,17 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
+			"a11y": {
+				"useButtonType": "off",
+				"useKeyWithClickEvents": "off"
+			},
 			"recommended": true,
 			"style":{
 				"useImportType": "off",
 				"useExportType": "off"
+				
 			}
+
 		},
 		"ignore": ["node_modules/**/*", "dist/**/*"]
 	},
