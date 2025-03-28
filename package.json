@@ -1,6 +1,6 @@
 {
   "name": "floating-ui-solid",
-  "version": "1.0.51",
+  "version": "1.0.52",
   "type": "module",
   "source": ".dist/source/index.jsx",
   "main": "./dist/cjs/index.cjs",
@@ -59,7 +59,7 @@
     "globals": "^16.0.0",
     "jsdom": "^26.0.0",
     "rollup": "^3.29.4",
-    "rollup-preset-solid": "^2.0.1",
+    "rollup-preset-solid": "^3.0.0",
     "tslib": "^2.6.3",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.28.0",

@@ -6,7 +6,7 @@
 <p>
 
 <p align="center">
-A lightweight and efficient Floating UI implementation for SolidJS.
+A lightweight SolidJS bindings for Floating UI.
 <p>
 
 ## Why choose floating-ui-solid?
@@ -15,6 +15,7 @@ A lightweight and efficient Floating UI implementation for SolidJS.
 - 🧹 Proper cleanup: cleanup function with autoUpdate is properly handled
 - 💪 Improved TypeScript support
 - 🤖 Better API
+- 🧐 Tested
 
 ## Installation
 
