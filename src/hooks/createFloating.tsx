@@ -21,8 +21,8 @@ export const createFloating = (props: useFloatingProps) => {
 
 	const [floatingStylesInternal, setFloatingStylesInternal] =
 		createSignal<CSSProperties>({
-			top: `${0}px`,
-			left: `${0}px`,
+			top: '0px',
+			left: '0px',
 			position: strategyProps(),
 			transform: transformProps() ? 'translate(0px, 0px)' : 'none',
 		});

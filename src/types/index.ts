@@ -14,7 +14,7 @@ export interface useFloatingProps {
 	placement?: Placement;
 	strategy?: Strategy;
 	isOpen: () => boolean;
-	middleware?: (() => MiddlewareType) | MiddlewareType | undefined;
+	middleware?: Accessor<MiddlewareType> | MiddlewareType | undefined;
 	whileElementsMounted?: (
 		refrence: HTMLElement,
 		floating: HTMLElement,
