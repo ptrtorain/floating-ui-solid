@@ -1,6 +1,6 @@
 {
   "name": "floating-ui-solid",
-  "version": "1.0.54",
+  "version": "1.0.55",
   "type": "module",
   "source": ".dist/source/index.jsx",
   "main": "./dist/cjs/index.cjs",
@@ -38,15 +38,15 @@
     "tooltip",
     "floating-ui"
   ],
-  "author": "rain",
+  "author": "ptrtorain",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rainyEra/floating-ui-solid"
+    "url": "https://github.com/ptrtorain/floating-ui-solid"
   },
   "license": "MIT",
   "description": "SolidJS bindings for Floating UI",
   "peerDependencies": {
-    "solid-js": "^1.8.18"
+    "solid-js": "^1.9.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
