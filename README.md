@@ -37,11 +37,11 @@ Here's a basic example of how to use floating-ui-solid:
 
 ```jsx
 import { createSignal } from 'solid-js';
-import { useFloating } from 'floating-ui-solid';
+import { createFloating } from 'floating-ui-solid';
 
 export default function App() {
   const [isOpen, setIsOpen] = createSignal(false);
-  const { refs, floatingStyles } = useFloating({
+  const { refs, floatingStyles } = createFloating({
     placement: "bottom",
     isOpen: isOpen,
     strategy: "absolute",
@@ -76,9 +76,9 @@ export default function App() {
 To keep the floating element positioned correctly when the reference element changes, use the `autoUpdate` function:
 
 ```jsx
-import { autoUpdate, useFloating } from 'floating-ui-solid';
+import { autoUpdate, createFloating } from 'floating-ui-solid';
 
-const { refs, floatingStyles } = useFloating({
+const { refs, floatingStyles } = createFloating({
   placement: "bottom",
   isOpen: isOpen,
   strategy: "absolute",
@@ -96,7 +96,7 @@ const { refs, floatingStyles } = useFloating({
 You can apply custom styles to the floating element using middleware:
 
 ```jsx
-import { autoUpdate, useFloating, size, offset } from 'floating-ui-solid';
+import { autoUpdate, createFloating, size, offset } from 'floating-ui-solid';
 
 const [reactiveMiddleware, setReactiveMiddleware] = createSignal([
     offset(10),
@@ -107,7 +107,7 @@ const [reactiveMiddleware, setReactiveMiddleware] = createSignal([
     })
   ]);
 
-const { refs, floatingStyles, setFloatingStyles } = useFloating({
+const { refs, floatingStyles, setFloatingStyles } = createFloating({
   placement: "bottom",
   isOpen: isOpen,
   strategy: "absolute",
@@ -117,9 +117,9 @@ const { refs, floatingStyles, setFloatingStyles } = useFloating({
 ### Arrow Element
 
 ```jsx
-import { autoUpdate, useFloating, arrow } from 'floating-ui-solid';
+import { autoUpdate, createFloating, arrow } from 'floating-ui-solid';
 const [reactiveMiddleware, setReactiveMiddleware] = createSignal([]);
-const { refs, floatingStyles, setFloatingStyles } = useFloating({
+const { refs, floatingStyles, setFloatingStyles } = createFloating({
   placement: "bottom",
   isOpen: isOpen,
   strategy: "absolute",
