@@ -82,8 +82,8 @@ export const createFloating = (props: useFloatingProps) => {
 	}
 
 	createEffect(() => {
-		const floatingEl = mainReference();
-		const refrenceEl = mainFloating();
+		const refrenceEl = mainReference();
+		const floatingEl = mainFloating();
 		props?.whileElementsMounted;
 		strategyProps();
 		placementProps();
