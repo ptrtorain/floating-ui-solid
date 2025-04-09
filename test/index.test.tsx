@@ -19,6 +19,7 @@ import {
 	shift,
 	size,
 } from '../src/index';
+import { Placement, Strategy } from '@floating-ui/dom';
 
 const user = userEvent.setup();
 
@@ -26,7 +27,7 @@ describe('createFloating', () => {
 	afterEach(() => {
 		cleanup();
 	});
-	it('createFloating x & y should start from 0', () => {
+	it('x & y should start from 0', () => {
 		const [show, setShow] = createSignal(false);
 		const { x, y } = createFloating({
 			isOpen: show,
@@ -37,7 +38,7 @@ describe('createFloating', () => {
 		expect(y()).toBe(0);
 	});
 
-	it('createFloating x & y should not be null after hovering', async () => {
+	it('x & y should not be null after hovering', async () => {
 		function TestComponent() {
 			const [visible, setVisible] = createSignal(false);
 			const { refs, x, y } = createFloating({
@@ -71,7 +72,7 @@ describe('createFloating', () => {
 		expect(xElement).not.toBe(0);
 		expect(yElement).not.toBe(0);
 	});
-	it('createFloating should be called one time', async () => {
+	it('should be called one time', async () => {
 		const cl = vi.fn();
 		function TestComponent() {
 			const [visible, setVisible] = createSignal(false);
@@ -104,7 +105,7 @@ describe('createFloating', () => {
 		expect(cl).toHaveBeenCalledTimes(1);
 	});
 
-	it('createFloating called one time when both elements are mounted', async () => {
+	it('called one time when both elements are mounted', async () => {
 		const spy = vi.fn();
 		function TestComponent() {
 			const [visible, setVisible] = createSignal(false);
@@ -125,7 +126,7 @@ describe('createFloating', () => {
 		expect(spy).toHaveBeenCalledOnce();
 	});
 
-	it('createFloating should be called one time after mounting conditionally', async () => {
+	it('should be called one time after mounting conditionally', async () => {
 		const cl = vi.fn();
 		function TestComponent() {
 			const [visible, setVisible] = createSignal(false);
@@ -167,7 +168,7 @@ describe('createFloating', () => {
 		expect(cl).toHaveBeenCalledTimes(1);
 	});
 
-	it('createFloating should be called when both elements are mounted conditionally', async () => {
+	it('should be called when both elements are mounted conditionally', async () => {
 		const spy = vi.fn();
 
 		function TestComponent() {
@@ -193,7 +194,7 @@ describe('createFloating', () => {
 		const { container } = render(() => <TestComponent />);
 		expect(spy).toHaveBeenCalledOnce();
 	});
-	it('createFloating calls the cleanup function', async () => {
+	it('calls the cleanup function', async () => {
 		const cleanupSpy = vi.fn();
 		const spy = vi.fn(() => cleanupSpy);
 
@@ -222,7 +223,7 @@ describe('createFloating', () => {
 		cleanup();
 	});
 
-	it('createFloating isPositioned', async () => {
+	it('isPositioned', async () => {
 		const spy = vi.fn();
 
 		function TestComponent() {
@@ -275,7 +276,7 @@ describe('createFloating', () => {
 		});
 	});
 
-	it('createFloating external floating elements sync', async () => {
+	it('external floating elements sync', async () => {
 		function TestComponent() {
 			const [visible, setVisible] = createSignal(false);
 			const { refs, x, y } = createFloating({
@@ -308,7 +309,7 @@ describe('createFloating', () => {
 		expect(getByTestId('value').textContent).toBe('0,0');
 	});
 
-	it('createFloating external elements sync', async () => {
+	it('external elements sync', async () => {
 		function TestComponent() {
 			const [referenceEl, setReferenceEl] = createSignal<
 				HTMLDivElement | null | undefined
@@ -355,7 +356,7 @@ describe('createFloating', () => {
 		});
 	});
 
-	it('createFloating external elements sync update', async () => {
+	it('external elements sync update', async () => {
 		function TestComponent() {
 			const [referenceEl, setReferenceEl] = createSignal<
 				HTMLDivElement | null | undefined
@@ -388,7 +389,7 @@ describe('createFloating', () => {
 		});
 	});
 
-	it('createFloating floatingStyles no transform', async () => {
+	it('floatingStyles no transform', async () => {
 		function TestComponent() {
 			const [visible, setVisible] = createSignal(false);
 			const { refs, floatingStyles } = createFloating({
@@ -434,7 +435,7 @@ describe('createFloating', () => {
 		});
 	});
 
-	it('createFloating floatingStyles default', async () => {
+	it('floatingStyles default', async () => {
 		function TestComponent() {
 			const [visible, setVisible] = createSignal(true);
 			const { refs, floatingStyles } = createFloating({
@@ -484,7 +485,7 @@ describe('createFloating', () => {
 		});
 	});
 
-	it('createFloating middleware is always fresh and does not cause an infinite loop', async () => {
+	it('middleware is always fresh and does not cause an infinite loop', async () => {
 		function TestComponent() {
 			const [visible, setVisible] = createSignal(false);
 			const [arrowRef, setArrowRef] = createSignal<HTMLElement | null>(null);
@@ -613,5 +614,64 @@ describe('createFloating', () => {
 		fireEvent.click(getByTestId('step4'));
 
 		await waitFor(() => {});
+	});
+
+	it('should react to props changes', async () => {
+		function TestComponent() {
+			const [visible, setVisible] = createSignal(true);
+			const [placement, setPlacement] = createSignal<Placement>('top-end');
+			const [strategy, setStrategy] = createSignal<Strategy>('absolute');
+			const { refs, placement: floatingPlacement, strategy: floatingStrategy } = createFloating({
+				isOpen: visible,
+				placement: placement,
+				strategy: strategy,
+			});
+			return (
+				<>
+					<div ref={refs.setReference} />
+					<div ref={refs.setFloating} />
+					<div data-testid="placement">{floatingPlacement()}</div>
+					<div data-testid="strategy">{floatingStrategy()}</div>
+					<button data-testid="step1" onClick={() => setPlacement('top')} />
+					<button data-testid="step2" onClick={() => setPlacement('right')} />
+					<button
+						data-testid="step3"
+						onClick={() => setPlacement('right-end')}
+					/>
+					<button
+						data-testid="step4"
+						onClick={() => setPlacement('left-end')}
+					/>
+					<button data-testid="step5" onClick={() => setStrategy('fixed')} />
+					<button data-testid="step6" onClick={() => setStrategy('absolute')} />
+				</>
+			);
+		}
+
+		const { getByTestId } = render(() => <TestComponent />);
+		expect(getByTestId('placement').textContent).toBe('top-end');
+		const step1 = getByTestId('step1');
+		const step2 = getByTestId('step2');
+		const step3 = getByTestId('step3');
+		const step4 = getByTestId('step4');
+		const step5 = getByTestId('step5');
+		const step6 = getByTestId('step6');
+		const placement = getByTestId('placement');
+		const strategy = getByTestId('strategy');
+		await user.click(step1);
+
+		expect(placement.textContent).toBe('top');
+
+		await user.click(step2);
+		expect(placement.textContent).toBe('right');
+		await user.click(step3);
+		expect(placement.textContent).toBe('right-end');
+		await user.click(step4);
+		expect(placement.textContent).toBe('left-end');
+		expect(strategy.textContent).toBe('absolute');
+		await user.click(step5);
+		expect(strategy.textContent).toBe('fixed');
+		await user.click(step6);
+		expect(strategy.textContent).toBe('absolute');
 	});
 });

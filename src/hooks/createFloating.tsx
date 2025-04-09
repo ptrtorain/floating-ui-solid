@@ -1,3 +1,4 @@
+/* eslint-disable solid/reactivity */
 import { batch, createEffect, createSignal, onCleanup } from 'solid-js';
 import { computePosition, MiddlewareData } from '@floating-ui/dom';
 import { getDPR, roundByDPR } from '../utils';
@@ -5,17 +6,17 @@ import {
 	CSSProperties,
 	Data,
 	FloatingElement,
-	useFloatingProps,
+	createFloatingProps,
 } from '../types';
 
-export const createFloating = (props: useFloatingProps) => {
+export const createFloating = (props: createFloatingProps) => {
 	const [_reference, setReference] = createSignal<FloatingElement>(null);
 	const [_floating, setFloating] = createSignal<FloatingElement>(null);
 
-	const strategyProps = () => props.strategy ?? 'absolute';
-	const placementProps = () => props.placement ?? 'bottom';
-	const transformProps = () =>
-		props.transform === undefined ? true : props.transform;
+	const strategyProps = () => typeof props.strategy === 'function' ? props.strategy() : props.strategy ?? 'absolute';
+	const placementProps = () => typeof props.placement === 'function' ? props.placement() : props.placement ?? 'bottom';
+	const transformProps = () => typeof props.transform === 'function' ? props.transform() : props.transform === undefined ? true : props.transform;
+	const middlewareProps = () => typeof props.middleware === 'function' ? props.middleware() : props.middleware;
 
 	const mainReference = () => props.elements?.reference() || _reference();
 	const mainFloating = () => props.elements?.floating() || _floating();
@@ -46,13 +47,11 @@ export const createFloating = (props: useFloatingProps) => {
 		if (refrenceEl && floatingEl) {
 			computePosition(refrenceEl, floatingEl, {
 				middleware:
-					typeof props.middleware === 'function'
-						? props.middleware?.()
-						: props.middleware,
+					middlewareProps(),
 				placement: placementProps(),
 				strategy: strategyProps(),
 			}).then(
-				// eslint-disable-next-line solid/reactivity
+		
 				(computeData) => {
 					const fullData = { ...computeData, isPositioned: true };
 					const newStyles = transformProps()
@@ -88,21 +87,18 @@ export const createFloating = (props: useFloatingProps) => {
 		strategyProps();
 		placementProps();
 		transformProps();
+		middlewareProps();
 
-		typeof props.middleware === 'function'
-			? props.middleware?.()
-			: props.middleware;
 		if (refrenceEl && floatingEl) {
-			if (props?.whileElementsMounted === undefined) {
-				update();
-				return;
-			}
-
 			if (typeof props.whileElementsMounted === 'function') {
+				cleanupFn.current?.();
 				cleanupFn = {
 					current: props.whileElementsMounted(refrenceEl, floatingEl, update),
 				};
+				return;
 			}
+
+			update();
 		}
 	});
 

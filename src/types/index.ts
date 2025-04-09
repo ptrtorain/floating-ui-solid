@@ -10,9 +10,9 @@ import { JSX } from 'solid-js/jsx-runtime';
 
 export type MiddlewareType = Array<Middleware | null | undefined | false>;
 
-export interface useFloatingProps {
-	placement?: Placement;
-	strategy?: Strategy;
+export interface createFloatingProps {
+	placement?: Placement | Accessor<Placement>;
+	strategy?: Strategy | Accessor<Strategy>;
 	isOpen: () => boolean;
 	middleware?: Accessor<MiddlewareType> | MiddlewareType | undefined;
 	whileElementsMounted?: (
@@ -21,10 +21,10 @@ export interface useFloatingProps {
 		update: () => void,
 	) => () => void;
 	elements?: {
-		reference:  Accessor<FloatingElement>;
+		reference: Accessor<FloatingElement>;
 		floating: Accessor<FloatingElement>;
 	}
-	transform?: boolean;
+	transform?: boolean | Accessor<boolean>;
 }
 export type Data = ComputePositionReturn & { isPositioned: boolean };
 
