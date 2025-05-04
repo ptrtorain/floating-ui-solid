@@ -13,7 +13,7 @@ export type MiddlewareType = Array<Middleware | null | undefined | false>;
 export interface createFloatingProps {
 	placement?: Placement | Accessor<Placement>;
 	strategy?: Strategy | Accessor<Strategy>;
-	isOpen: () => boolean;
+	isOpen?: Accessor<boolean>;
 	middleware?: Accessor<MiddlewareType> | MiddlewareType | undefined;
 	whileElementsMounted?: (
 		refrence: HTMLElement,
@@ -25,8 +25,9 @@ export interface createFloatingProps {
 		floating: Accessor<FloatingElement>;
 	}
 	transform?: boolean | Accessor<boolean>;
+	arrow?: Accessor<FloatingElement>
 }
-export type Data = ComputePositionReturn & { isPositioned: boolean };
+export type Data = ComputePositionReturn & { isPositioned: boolean, arrow?: { x?: number, y?: number, centerOffset: number; alignmentOffset?: number; } | null };
 
 export type FloatingElement = HTMLElement | null | undefined;
 

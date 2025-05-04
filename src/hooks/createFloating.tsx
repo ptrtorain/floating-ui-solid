@@ -1,4 +1,3 @@
-/* eslint-disable solid/reactivity */
 import { batch, createEffect, createSignal, onCleanup } from 'solid-js';
 import { computePosition, MiddlewareData } from '@floating-ui/dom';
 import { getDPR, roundByDPR } from '../utils';
@@ -6,17 +5,38 @@ import {
 	CSSProperties,
 	Data,
 	FloatingElement,
+	MiddlewareType,
 	createFloatingProps,
 } from '../types';
 
-export const createFloating = (props: createFloatingProps) => {
+export const createFloating = (props: createFloatingProps = {}) => {
 	const [_reference, setReference] = createSignal<FloatingElement>(null);
 	const [_floating, setFloating] = createSignal<FloatingElement>(null);
 
-	const strategyProps = () => typeof props.strategy === 'function' ? props.strategy() : props.strategy ?? 'absolute';
-	const placementProps = () => typeof props.placement === 'function' ? props.placement() : props.placement ?? 'bottom';
-	const transformProps = () => typeof props.transform === 'function' ? props.transform() : props.transform === undefined ? true : props.transform;
-	const middlewareProps = () => typeof props.middleware === 'function' ? props.middleware() : props.middleware;
+	const strategyProps = () =>
+		typeof props.strategy === 'function'
+			? props.strategy()
+			: (props.strategy ?? 'absolute');
+
+	const placementProps = () =>
+		typeof props.placement === 'function'
+			? props.placement()
+			: (props.placement ?? 'bottom');
+
+	const transformProps =
+		typeof props.transform === 'function'
+			? props.transform
+			: () => (props.transform === undefined ? true : props.transform);
+
+	const middlewareProps =
+		typeof props.middleware === 'function'
+			? props.middleware
+			: () => (props.middleware ? props.middleware : []);
+
+	const isOpen =
+		typeof props.isOpen === 'function'
+			? props.isOpen
+			: () => props.isOpen || true;
 
 	const mainReference = () => props.elements?.reference() || _reference();
 	const mainFloating = () => props.elements?.floating() || _floating();
@@ -36,32 +56,32 @@ export const createFloating = (props: createFloatingProps) => {
 		middlewareData: {},
 		placement: placementProps(),
 		isPositioned: false,
+		arrow: null,
 	});
-
-	let cleanupFn: { current: undefined | (() => void) } = { current: undefined };
 
 	function update() {
 		const refrenceEl = mainReference();
 		const floatingEl = mainFloating();
-
 		if (refrenceEl && floatingEl) {
 			computePosition(refrenceEl, floatingEl, {
-				middleware:
-					middlewareProps(),
+				middleware: middlewareProps() as MiddlewareType,
 				placement: placementProps(),
 				strategy: strategyProps(),
 			}).then(
-		
 				(computeData) => {
 					const fullData = { ...computeData, isPositioned: true };
 					const newStyles = transformProps()
 						? {
 								transform: `translate(${roundByDPR(floatingEl, fullData.x)}px, ${roundByDPR(floatingEl, fullData.y)}px)`,
 								...(getDPR(floatingEl) >= 1.5 && { willChange: 'transform' }),
+								top: '0px',
+								left: '0px',
+								position: strategyProps(),
 							}
 						: {
 								top: `${fullData.y}px`,
 								left: `${fullData.x}px`,
+								position: strategyProps(),
 							};
 
 					batch(() => {
@@ -69,6 +89,7 @@ export const createFloating = (props: createFloatingProps) => {
 							...fullData,
 							middlewareData: fullData.middlewareData,
 							isPositioned: true,
+							arrow: computeData.middlewareData.arrow,
 						});
 						setFloatingStylesInternal((prev) => ({ ...prev, ...newStyles }));
 					});
@@ -83,18 +104,31 @@ export const createFloating = (props: createFloatingProps) => {
 	createEffect(() => {
 		const refrenceEl = mainReference();
 		const floatingEl = mainFloating();
-		props?.whileElementsMounted;
+
 		strategyProps();
 		placementProps();
 		transformProps();
 		middlewareProps();
+		if (typeof props.arrow === 'function') props?.arrow();
+
+		if (!isOpen()) return;
+
+		const cleanupFn: { current: (() => void) | undefined } = {
+			current: undefined,
+		};
+
+		onCleanup(() => {
+			cleanupFn.current?.();
+			cleanupFn.current = undefined;
+		});
 
 		if (refrenceEl && floatingEl) {
 			if (typeof props.whileElementsMounted === 'function') {
-				cleanupFn.current?.();
-				cleanupFn = {
-					current: props.whileElementsMounted(refrenceEl, floatingEl, update),
-				};
+				cleanupFn.current = props.whileElementsMounted(
+					refrenceEl,
+					floatingEl,
+					update,
+				);
 				return;
 			}
 
@@ -103,19 +137,9 @@ export const createFloating = (props: createFloatingProps) => {
 	});
 
 	createEffect(() => {
-		const open = props?.isOpen();
-
-		if (open === false && data().isPositioned) {
+		if (isOpen() === false && data().isPositioned) {
 			setData({ ...data(), isPositioned: false });
 		}
-
-		onCleanup(() => {
-			if (typeof cleanupFn.current === 'function') {
-				cleanupFn.current?.();
-
-				cleanupFn = { current: undefined };
-			}
-		});
 	});
 
 	return {
@@ -124,6 +148,7 @@ export const createFloating = (props: createFloatingProps) => {
 		placement: () => data().placement,
 		strategy: () => data().strategy,
 		isPositioned: () => data().isPositioned,
+
 		floatingStyles: floatingStylesInternal,
 		setFloatingStyles: (params: CSSProperties) =>
 			setFloatingStylesInternal(params),
@@ -132,6 +157,7 @@ export const createFloating = (props: createFloatingProps) => {
 			reference: () => _reference(),
 			floating: () => _floating(),
 		},
+		arrowStyles: () => data().arrow,
 		refs: {
 			setReference: setReference,
 			setFloating: setFloating,

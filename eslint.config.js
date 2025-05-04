@@ -5,7 +5,7 @@ import * as tsParser from "@typescript-eslint/parser";
 export default [
 
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ["src/**/*.{ts,tsx}"],
     ...solid,
     languageOptions: {
       parser: tsParser,

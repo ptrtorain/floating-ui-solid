@@ -17,7 +17,8 @@ export function arrow({
 	element,
 	padding,
 }: { element: HTMLElement | null | undefined; padding?: number }) {
-	return arrowInternal({ element: element as Element, padding: padding ?? 0 });
+	return arrowInternal({ element: element as Element, padding: padding });
 }
+
 export * from './types';
 export { createFloating } from './hooks/createFloating';

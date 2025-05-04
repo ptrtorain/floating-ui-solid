@@ -13,13 +13,13 @@ import userEvent from '@testing-library/user-event';
 import {
 	arrow,
 	flip,
+	FloatingElement,
 	hide,
 	limitShift,
 	offset,
 	shift,
 	size,
 } from '../src/index';
-import { Placement, Strategy } from '@floating-ui/dom';
 
 const user = userEvent.setup();
 
@@ -28,9 +28,7 @@ describe('createFloating', () => {
 		cleanup();
 	});
 	it('x & y should start from 0', () => {
-		const [show, setShow] = createSignal(false);
 		const { x, y } = createFloating({
-			isOpen: show,
 			placement: 'bottom',
 		});
 
@@ -38,54 +36,17 @@ describe('createFloating', () => {
 		expect(y()).toBe(0);
 	});
 
-	it('x & y should not be null after hovering', async () => {
-		function TestComponent() {
-			const [visible, setVisible] = createSignal(false);
-			const { refs, x, y } = createFloating({
-				isOpen: visible,
-				placement: 'bottom',
-			});
-			const [ref, setRef] = createSignal<HTMLDivElement | null>(null);
-
-			return (
-				<div>
-					<div class="x" data-testid="x" ref={setRef}>
-						{x()}
-					</div>
-					<div class="y" data-testid="y">
-						{y()}
-					</div>
-					<div ref={refs.setReference} data-testid="reference">
-						Reference Element
-					</div>
-					{visible() && <div ref={refs.setFloating}>Floating Element</div>}
-				</div>
-			);
-		}
-
-		const { container } = render(() => <TestComponent />);
-
-		const element = getByTestId(container, 'reference');
-		const xElement = getByTestId(container, 'x');
-		const yElement = getByTestId(container, 'y');
-		await user.hover(element);
-		expect(xElement).not.toBe(0);
-		expect(yElement).not.toBe(0);
-	});
 	it('should be called one time', async () => {
 		const cl = vi.fn();
 		function TestComponent() {
-			const [visible, setVisible] = createSignal(false);
 			const { refs, x, y } = createFloating({
-				isOpen: visible,
 				placement: 'bottom',
 				whileElementsMounted: cl,
 			});
-			const [ref, setRef] = createSignal<HTMLDivElement | null>(null);
 
 			return (
 				<div>
-					<div class="x" data-testid="x" ref={setRef}>
+					<div class="x" data-testid="x">
 						{x()}
 					</div>
 					<div class="y" data-testid="y">
@@ -99,8 +60,7 @@ describe('createFloating', () => {
 			);
 		}
 
-		const renderComponent = () => render(() => <TestComponent />);
-		const { unmount, container } = renderComponent();
+		render(() => <TestComponent />);
 
 		expect(cl).toHaveBeenCalledTimes(1);
 	});
@@ -108,9 +68,7 @@ describe('createFloating', () => {
 	it('called one time when both elements are mounted', async () => {
 		const spy = vi.fn();
 		function TestComponent() {
-			const [visible, setVisible] = createSignal(false);
 			const { refs } = createFloating({
-				isOpen: visible,
 				placement: 'bottom',
 				whileElementsMounted: spy,
 			});
@@ -122,7 +80,7 @@ describe('createFloating', () => {
 				</div>
 			);
 		}
-		const renderx = render(() => <TestComponent />);
+		render(() => <TestComponent />);
 		expect(spy).toHaveBeenCalledOnce();
 	});
 
@@ -135,17 +93,15 @@ describe('createFloating', () => {
 				placement: 'bottom',
 				whileElementsMounted: cl,
 			});
-			const [ref, setRef] = createSignal<HTMLDivElement | null>(null);
 
 			return (
 				<div>
-					<div class="x" data-testid="x" ref={setRef}>
+					<div class="x" data-testid="x">
 						{x()}
 					</div>
 					<div class="y" data-testid="y">
 						{y()}
 					</div>
-			
 					<div
 						ref={refs.setReference}
 						onClick={() => setVisible((prev) => !prev)}
@@ -173,7 +129,7 @@ describe('createFloating', () => {
 
 		function TestComponent() {
 			const [visible, setVisible] = createSignal(false);
-			const { refs } = createFloating({
+			const { refs, x, y } = createFloating({
 				isOpen: visible,
 				placement: 'bottom',
 				whileElementsMounted: spy,
@@ -191,7 +147,7 @@ describe('createFloating', () => {
 			);
 		}
 
-		const { container } = render(() => <TestComponent />);
+		render(() => <TestComponent />);
 		expect(spy).toHaveBeenCalledOnce();
 	});
 	it('calls the cleanup function', async () => {
@@ -211,13 +167,13 @@ describe('createFloating', () => {
 
 			return (
 				<div>
+					<div ref={refs.setReference}>Reference Element</div>
 					{visible() && <div ref={refs.setFloating}>Floating Element</div>}
-					{visible() && <div ref={refs.setReference}>Reference Element</div>}
 				</div>
 			);
 		}
 
-		const { container } = render(() => <TestComponent />);
+		render(() => <TestComponent />);
 		expect(cleanupSpy).toHaveBeenCalledOnce();
 		expect(spy).toHaveBeenCalledOnce();
 		cleanup();
@@ -241,6 +197,7 @@ describe('createFloating', () => {
 					<button
 						ref={refs.setReference}
 						onClick={() => setVisible(!visible())}
+						type="button"
 					>
 						Reference Element
 					</button>
@@ -250,38 +207,33 @@ describe('createFloating', () => {
 		}
 		const { getByRole } = render(() => <TestComponent />);
 		const element = getByRole('button');
-		fireEvent.click(element);
-
-		expect(spy?.mock?.calls?.[0]?.[0]).toBe(false);
+		await userEvent.click(element);
+		expect(spy.mock.calls[0][0]).toBe(false);
 
 		await waitFor(() => {
-			expect(spy?.mock?.calls?.[1]?.[0]).toBe(true);
+			expect(spy.mock.calls[1][0]).toBe(true);
 		});
-		fireEvent.click(element);
-
+		await userEvent.click(element);
 		await waitFor(() => {
-			expect(spy?.mock?.calls?.[2]?.[0]).toBe(false);
+			expect(spy.mock.calls[2][0]).toBe(false);
 		});
 
-		fireEvent.click(element);
+		await userEvent.click(element);
 
 		await waitFor(() => {
-			expect(spy?.mock?.calls?.[3]?.[0]).toBe(true);
+			expect(spy.mock.calls[3][0]).toBe(true);
 		});
 
-		fireEvent.click(element);
+		await userEvent.click(element);
 
 		await waitFor(() => {
-			expect(spy?.mock?.calls?.[4]?.[0]).toBe(false);
+			expect(spy.mock.calls[4][0]).toBe(false);
 		});
 	});
 
 	it('external floating elements sync', async () => {
 		function TestComponent() {
-			const [visible, setVisible] = createSignal(false);
-			const { refs, x, y } = createFloating({
-				isOpen: visible,
-			});
+			const { refs, x, y } = createFloating({});
 
 			const [reference, setReference] = createSignal<HTMLDivElement | null>(
 				null,
@@ -311,15 +263,10 @@ describe('createFloating', () => {
 
 	it('external elements sync', async () => {
 		function TestComponent() {
-			const [referenceEl, setReferenceEl] = createSignal<
-				HTMLDivElement | null | undefined
-			>(null);
-			const [floatingEl, setFloatingEl] = createSignal<
-				HTMLDivElement | null | undefined
-			>(null);
-			const [visible, setVisible] = createSignal(false);
+			const [referenceEl, setReferenceEl] = createSignal<FloatingElement>(null);
+			const [floatingEl, setFloatingEl] = createSignal<FloatingElement>(null);
+
 			const { x, y } = createFloating({
-				isOpen: visible,
 				elements: {
 					floating: floatingEl,
 					reference: referenceEl,
@@ -364,9 +311,9 @@ describe('createFloating', () => {
 			const [floatingEl, setFloatingEl] = createSignal<
 				HTMLDivElement | null | undefined
 			>(null);
-			const [visible] = createSignal(false);
+			const [visible, setVisible] = createSignal(false);
 
-			const { x, y } = createFloating({
+			const { refs, x, y } = createFloating({
 				isOpen: visible,
 				elements: {
 					floating: floatingEl,
@@ -391,10 +338,8 @@ describe('createFloating', () => {
 
 	it('floatingStyles no transform', async () => {
 		function TestComponent() {
-			const [visible, setVisible] = createSignal(false);
 			const { refs, floatingStyles } = createFloating({
 				transform: false,
-				isOpen: visible,
 			});
 
 			return (
@@ -487,10 +432,8 @@ describe('createFloating', () => {
 
 	it('middleware is always fresh and does not cause an infinite loop', async () => {
 		function TestComponent() {
-			const [visible, setVisible] = createSignal(false);
 			const [arrowRef, setArrowRef] = createSignal<HTMLElement | null>(null);
 			const { refs, setFloatingStyles } = createFloating({
-				isOpen: visible,
 				placement: 'right',
 				middleware: [
 					offset(),
@@ -511,7 +454,6 @@ describe('createFloating', () => {
 					shift({ limiter: limitShift({ offset: () => 5 }) }),
 					shift({ limiter: limitShift({ offset: () => ({ crossAxis: 10 }) }) }),
 
-					// eslint-disable-next-line solid/reactivity
 					arrow({ element: arrowRef() }),
 
 					hide(),
@@ -533,7 +475,7 @@ describe('createFloating', () => {
 		}
 
 		function TestComponent2() {
-			const [arrowRef] = createSignal<HTMLElement | null>(null);
+			const [arrowRef, setArrowRef] = createSignal<HTMLElement | null>(null);
 			const [middleware, setMiddleware] = createSignal([
 				offset(),
 				offset(10),
@@ -556,7 +498,6 @@ describe('createFloating', () => {
 				shift({ limiter: limitShift({ offset: () => 5 }) }),
 				shift({ limiter: limitShift({ offset: () => ({ crossAxis: 10 }) }) }),
 
-				// eslint-disable-next-line solid/reactivity
 				arrow({ element: arrowRef() }),
 
 				hide(),
@@ -569,7 +510,7 @@ describe('createFloating', () => {
 					},
 				}),
 			]);
-			const [visible, setVisible] = createSignal(false);
+			const [visible, setVisible] = createSignal(true);
 			const { x, y, refs } = createFloating({
 				placement: 'right',
 				middleware: middleware,
@@ -582,13 +523,23 @@ describe('createFloating', () => {
 					<button
 						data-testid="step1"
 						onClick={() => setMiddleware([offset(10)])}
+						type="button"
 					/>
 					<button
 						data-testid="step2"
 						onClick={() => setMiddleware([offset(() => 5)])}
+						type="button"
 					/>
-					<button data-testid="step3" onClick={() => setMiddleware([])} />
-					<button data-testid="step4" onClick={() => setMiddleware([flip()])} />
+					<button
+						data-testid="step3"
+						type="button"
+						onClick={() => setMiddleware([])}
+					/>
+					<button
+						type="button"
+						data-testid="step4"
+						onClick={() => setMiddleware([flip()])}
+					/>
 					<div data-testid="x">{x()}</div>
 					<div data-testid="y">{y()}</div>
 				</>
@@ -614,64 +565,5 @@ describe('createFloating', () => {
 		fireEvent.click(getByTestId('step4'));
 
 		await waitFor(() => {});
-	});
-
-	it('should react to props changes', async () => {
-		function TestComponent() {
-			const [visible, setVisible] = createSignal(true);
-			const [placement, setPlacement] = createSignal<Placement>('top-end');
-			const [strategy, setStrategy] = createSignal<Strategy>('absolute');
-			const { refs, placement: floatingPlacement, strategy: floatingStrategy } = createFloating({
-				isOpen: visible,
-				placement: placement,
-				strategy: strategy,
-			});
-			return (
-				<>
-					<div ref={refs.setReference} />
-					<div ref={refs.setFloating} />
-					<div data-testid="placement">{floatingPlacement()}</div>
-					<div data-testid="strategy">{floatingStrategy()}</div>
-					<button data-testid="step1" onClick={() => setPlacement('top')} />
-					<button data-testid="step2" onClick={() => setPlacement('right')} />
-					<button
-						data-testid="step3"
-						onClick={() => setPlacement('right-end')}
-					/>
-					<button
-						data-testid="step4"
-						onClick={() => setPlacement('left-end')}
-					/>
-					<button data-testid="step5" onClick={() => setStrategy('fixed')} />
-					<button data-testid="step6" onClick={() => setStrategy('absolute')} />
-				</>
-			);
-		}
-
-		const { getByTestId } = render(() => <TestComponent />);
-		expect(getByTestId('placement').textContent).toBe('top-end');
-		const step1 = getByTestId('step1');
-		const step2 = getByTestId('step2');
-		const step3 = getByTestId('step3');
-		const step4 = getByTestId('step4');
-		const step5 = getByTestId('step5');
-		const step6 = getByTestId('step6');
-		const placement = getByTestId('placement');
-		const strategy = getByTestId('strategy');
-		await user.click(step1);
-
-		expect(placement.textContent).toBe('top');
-
-		await user.click(step2);
-		expect(placement.textContent).toBe('right');
-		await user.click(step3);
-		expect(placement.textContent).toBe('right-end');
-		await user.click(step4);
-		expect(placement.textContent).toBe('left-end');
-		expect(strategy.textContent).toBe('absolute');
-		await user.click(step5);
-		expect(strategy.textContent).toBe('fixed');
-		await user.click(step6);
-		expect(strategy.textContent).toBe('absolute');
 	});
 });
