@@ -5,7 +5,6 @@ import {
 	CSSProperties,
 	Data,
 	FloatingElement,
-	MiddlewareType,
 	createFloatingProps,
 } from '../types';
 
@@ -80,6 +79,7 @@ export const createFloating = (props: createFloatingProps = {}) => {
 								top: `${fullData.y}px`,
 								left: `${fullData.x}px`,
 								position: strategyProps(),
+								transform: 'none',
 							};
 
 					batch(() => {
