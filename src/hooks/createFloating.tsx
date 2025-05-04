@@ -29,9 +29,7 @@ export const createFloating = (props: createFloatingProps = {}) => {
 			: () => (props.transform === undefined ? true : props.transform);
 
 	const middlewareProps =
-		typeof props.middleware === 'function'
-			? props.middleware
-			: () => (props.middleware ? props.middleware : []);
+		typeof props.middleware === 'function' ? props.middleware : () => [];
 
 	const isOpen =
 		typeof props.isOpen === 'function'
@@ -64,7 +62,7 @@ export const createFloating = (props: createFloatingProps = {}) => {
 		const floatingEl = mainFloating();
 		if (refrenceEl && floatingEl) {
 			computePosition(refrenceEl, floatingEl, {
-				middleware: middlewareProps() as MiddlewareType,
+				middleware: middlewareProps(),
 				placement: placementProps(),
 				strategy: strategyProps(),
 			}).then(
