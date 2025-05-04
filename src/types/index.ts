@@ -25,10 +25,11 @@ export interface createFloatingProps {
 		floating: Accessor<FloatingElement>;
 	}
 	transform?: boolean | Accessor<boolean>;
-	arrow?: Accessor<FloatingElement>
 }
 export type Data = ComputePositionReturn & { isPositioned: boolean, arrow?: { x?: number, y?: number, centerOffset: number; alignmentOffset?: number; } | null };
 
 export type FloatingElement = HTMLElement | null | undefined;
 
 export type CSSProperties = JSX.CSSProperties;
+
+export type {Placement, Strategy}

@@ -17,8 +17,10 @@ import {
 	hide,
 	limitShift,
 	offset,
+	Placement,
 	shift,
 	size,
+	Strategy,
 } from '../src/index';
 
 const user = userEvent.setup();
@@ -565,5 +567,84 @@ describe('createFloating', () => {
 		fireEvent.click(getByTestId('step4'));
 
 		await waitFor(() => {});
+	});
+
+	it('should react to props changes', async () => {
+		function TestComponent() {
+			const [placement, setPlacement] = createSignal<Placement>('top-end');
+			const [strategy, setStrategy] = createSignal<Strategy>('absolute');
+			const {
+				refs,
+				placement: floatingPlacement,
+				strategy: floatingStrategy,
+			} = createFloating({
+				placement: placement,
+				strategy: strategy,
+			});
+			return (
+				<>
+					<div ref={refs.setReference} />
+					<div ref={refs.setFloating} />
+					<div data-testid="placement">{floatingPlacement()}</div>
+					<div data-testid="strategy">{floatingStrategy()}</div>
+					<button
+						data-testid="step1"
+						onClick={() => setPlacement('top')}
+						type="button"
+					/>
+					<button
+						data-testid="step2"
+						onClick={() => setPlacement('right')}
+						type="button"
+					/>
+					<button
+						data-testid="step3"
+						type="button"
+						onClick={() => setPlacement('right-end')}
+					/>
+					<button
+						type="button"
+						data-testid="step4"
+						onClick={() => setPlacement('left-end')}
+					/>
+					<button
+						type="button"
+						data-testid="step5"
+						onClick={() => setStrategy('fixed')}
+					/>
+					<button
+						type="button"
+						data-testid="step6"
+						onClick={() => setStrategy('absolute')}
+					/>
+				</>
+			);
+		}
+
+		const { getByTestId } = render(() => <TestComponent />);
+		expect(getByTestId('placement').textContent).toBe('top-end');
+		const step1 = getByTestId('step1');
+		const step2 = getByTestId('step2');
+		const step3 = getByTestId('step3');
+		const step4 = getByTestId('step4');
+		const step5 = getByTestId('step5');
+		const step6 = getByTestId('step6');
+		const placement = getByTestId('placement');
+		const strategy = getByTestId('strategy');
+		await user.click(step1);
+
+		expect(placement.textContent).toBe('top');
+
+		await user.click(step2);
+		expect(placement.textContent).toBe('right');
+		await user.click(step3);
+		expect(placement.textContent).toBe('right-end');
+		await user.click(step4);
+		expect(placement.textContent).toBe('left-end');
+		expect(strategy.textContent).toBe('absolute');
+		await user.click(step5);
+		expect(strategy.textContent).toBe('fixed');
+		await user.click(step6);
+		expect(strategy.textContent).toBe('absolute');
 	});
 });

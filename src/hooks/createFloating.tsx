@@ -109,7 +109,6 @@ export const createFloating = (props: createFloatingProps = {}) => {
 		placementProps();
 		transformProps();
 		middlewareProps();
-		if (typeof props.arrow === 'function') props?.arrow();
 
 		if (!isOpen()) return;
 
