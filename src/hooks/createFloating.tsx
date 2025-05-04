@@ -5,6 +5,7 @@ import {
 	CSSProperties,
 	Data,
 	FloatingElement,
+	MiddlewareType,
 	createFloatingProps,
 } from '../types';
 
@@ -28,12 +29,14 @@ export const createFloating = (props: createFloatingProps = {}) => {
 			: () => (props.transform === undefined ? true : props.transform);
 
 	const middlewareProps =
-		typeof props.middleware === 'function' ? props.middleware : () => [];
+		typeof props.middleware === 'function'
+			? props.middleware
+			: () => props.middleware ?? [];
 
 	const isOpen =
 		typeof props.isOpen === 'function'
 			? props.isOpen
-			: () => props.isOpen || true;
+			: () => props.isOpen ?? true;
 
 	const mainReference = () => props.elements?.reference() || _reference();
 	const mainFloating = () => props.elements?.floating() || _floating();
@@ -61,7 +64,7 @@ export const createFloating = (props: createFloatingProps = {}) => {
 		const floatingEl = mainFloating();
 		if (refrenceEl && floatingEl) {
 			computePosition(refrenceEl, floatingEl, {
-				middleware: middlewareProps(),
+				middleware: middlewareProps() as MiddlewareType,
 				placement: placementProps(),
 				strategy: strategyProps(),
 			}).then(
@@ -145,7 +148,6 @@ export const createFloating = (props: createFloatingProps = {}) => {
 		placement: () => data().placement,
 		strategy: () => data().strategy,
 		isPositioned: () => data().isPositioned,
-
 		floatingStyles: floatingStylesInternal,
 		setFloatingStyles: (params: CSSProperties) =>
 			setFloatingStylesInternal(params),

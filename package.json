@@ -1,6 +1,6 @@
 {
   "name": "floating-ui-solid",
-  "version": "1.0.61",
+  "version": "1.0.62",
   "type": "module",
   "source": ".dist/source/index.jsx",
   "main": "./dist/cjs/index.cjs",
