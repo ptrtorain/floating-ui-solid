@@ -1,17 +1,21 @@
-import { batch, createEffect, createSignal, onCleanup } from 'solid-js';
-import { computePosition, MiddlewareData } from '@floating-ui/dom';
+import { createEffect, createMemo, createSignal, onCleanup } from 'solid-js';
+import { computePosition, VirtualElement } from '@floating-ui/dom';
 import { getDPR, roundByDPR } from '../utils';
 import {
 	CSSProperties,
 	Data,
-	FloatingElement,
 	MiddlewareType,
 	createFloatingProps,
+	createFloatingReturn,
 } from '../types';
 
-export const createFloating = (props: createFloatingProps = {}) => {
-	const [_reference, setReference] = createSignal<FloatingElement>(null);
-	const [_floating, setFloating] = createSignal<FloatingElement>(null);
+export const createFloating = (
+	props: createFloatingProps = {},
+): createFloatingReturn => {
+	const [_reference, setReference] = createSignal<
+		Element | VirtualElement | null
+	>(null);
+	const [_floating, setFloating] = createSignal<HTMLElement | null>(null);
 
 	const strategyProps = () =>
 		typeof props.strategy === 'function'
@@ -38,16 +42,9 @@ export const createFloating = (props: createFloatingProps = {}) => {
 			? props.isOpen
 			: () => props.isOpen ?? true;
 
-	const mainReference = () => props.elements?.reference() || _reference();
-	const mainFloating = () => props.elements?.floating() || _floating();
+	const mainReference = () => props.elements?.reference?.() || _reference();
 
-	const [floatingStylesInternal, setFloatingStylesInternal] =
-		createSignal<CSSProperties>({
-			top: '0px',
-			left: '0px',
-			position: strategyProps(),
-			transform: transformProps() ? 'translate(0px, 0px)' : 'none',
-		});
+	const mainFloating = () => props.elements?.floating?.() || _floating();
 
 	const [data, setData] = createSignal<Data>({
 		x: 0,
@@ -62,6 +59,7 @@ export const createFloating = (props: createFloatingProps = {}) => {
 	function update() {
 		const refrenceEl = mainReference();
 		const floatingEl = mainFloating();
+
 		if (refrenceEl && floatingEl) {
 			computePosition(refrenceEl, floatingEl, {
 				middleware: middlewareProps() as MiddlewareType,
@@ -70,29 +68,12 @@ export const createFloating = (props: createFloatingProps = {}) => {
 			}).then(
 				(computeData) => {
 					const fullData = { ...computeData, isPositioned: true };
-					const newStyles = transformProps()
-						? {
-								transform: `translate(${roundByDPR(floatingEl, fullData.x)}px, ${roundByDPR(floatingEl, fullData.y)}px)`,
-								...(getDPR(floatingEl) >= 1.5 && { willChange: 'transform' }),
-								top: '0px',
-								left: '0px',
-								position: strategyProps(),
-							}
-						: {
-								top: `${fullData.y}px`,
-								left: `${fullData.x}px`,
-								position: strategyProps(),
-								transform: 'none',
-							};
 
-					batch(() => {
-						setData({
-							...fullData,
-							middlewareData: fullData.middlewareData,
-							isPositioned: true,
-							arrow: computeData.middlewareData.arrow,
-						});
-						setFloatingStylesInternal((prev) => ({ ...prev, ...newStyles }));
+					setData({
+						...fullData,
+						middlewareData: fullData.middlewareData,
+						isPositioned: true,
+						arrow: computeData.middlewareData.arrow,
 					});
 				},
 				(err) => {
@@ -142,16 +123,44 @@ export const createFloating = (props: createFloatingProps = {}) => {
 		}
 	});
 
+	const floatingStyles = createMemo(() => {
+		data().x;
+		data().y;
+		transformProps();
+		strategyProps();
+		mainFloating();
+
+		const initialStyles = {
+			top: '0px',
+			left: '0px',
+			position: strategyProps(),
+		};
+		if (!mainFloating?.()) {
+			return initialStyles;
+		}
+
+		const x = roundByDPR(mainFloating?.() as Element, data().x);
+		const y = roundByDPR(mainFloating?.() as Element, data().y);
+
+		return transformProps()
+			? {
+					...initialStyles,
+					transform: `translate(${x}px, ${y}px)`,
+					...(getDPR(mainFloating?.() as Element) >= 1.5 && {
+						willChange: 'transform',
+					}),
+				}
+			: { position: strategyProps(), left: `${x}px`, top: `${y}px` };
+	});
+
 	return {
 		x: () => data().x,
 		y: () => data().y,
 		placement: () => data().placement,
 		strategy: () => data().strategy,
 		isPositioned: () => data().isPositioned,
-		floatingStyles: floatingStylesInternal,
-		setFloatingStyles: (params: CSSProperties) =>
-			setFloatingStylesInternal(params),
-		middleware: () => data().middlewareData as MiddlewareData,
+		floatingStyles: floatingStyles,
+		middleware: () => data().middlewareData,
 		elements: {
 			reference: () => _reference(),
 			floating: () => _floating(),
@@ -160,6 +169,8 @@ export const createFloating = (props: createFloatingProps = {}) => {
 		refs: {
 			setReference: setReference,
 			setFloating: setFloating,
+			reference: () => _reference(),
+			floating: () => _floating(),
 		},
 		update,
 	};

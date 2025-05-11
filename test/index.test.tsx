@@ -13,7 +13,6 @@ import userEvent from '@testing-library/user-event';
 import {
 	arrow,
 	flip,
-	FloatingElement,
 	hide,
 	limitShift,
 	offset,
@@ -131,7 +130,7 @@ describe('createFloating', () => {
 
 		function TestComponent() {
 			const [visible, setVisible] = createSignal(false);
-			const { refs, x, y } = createFloating({
+			const { refs } = createFloating({
 				isOpen: visible,
 				placement: 'bottom',
 				whileElementsMounted: spy,
@@ -210,25 +209,32 @@ describe('createFloating', () => {
 		const { getByRole } = render(() => <TestComponent />);
 		const element = getByRole('button');
 		await userEvent.click(element);
+		//@ts-ignore
 		expect(spy.mock.calls[0][0]).toBe(false);
 
 		await waitFor(() => {
+			//@ts-ignore
 			expect(spy.mock.calls[1][0]).toBe(true);
 		});
 		await userEvent.click(element);
 		await waitFor(() => {
+			//@ts-ignore
 			expect(spy.mock.calls[2][0]).toBe(false);
 		});
 
 		await userEvent.click(element);
 
 		await waitFor(() => {
+			//@ts-ignore
+
 			expect(spy.mock.calls[3][0]).toBe(true);
 		});
 
 		await userEvent.click(element);
 
 		await waitFor(() => {
+			//@ts-ignore
+
 			expect(spy.mock.calls[4][0]).toBe(false);
 		});
 	});
@@ -265,8 +271,12 @@ describe('createFloating', () => {
 
 	it('external elements sync', async () => {
 		function TestComponent() {
-			const [referenceEl, setReferenceEl] = createSignal<FloatingElement>(null);
-			const [floatingEl, setFloatingEl] = createSignal<FloatingElement>(null);
+			const [referenceEl, setReferenceEl] = createSignal<HTMLElement | null>(
+				null,
+			);
+			const [floatingEl, setFloatingEl] = createSignal<HTMLElement | null>(
+				null,
+			);
 
 			const { x, y } = createFloating({
 				elements: {
@@ -307,12 +317,12 @@ describe('createFloating', () => {
 
 	it('external elements sync update', async () => {
 		function TestComponent() {
-			const [referenceEl, setReferenceEl] = createSignal<
-				HTMLDivElement | null | undefined
-			>(null);
-			const [floatingEl, setFloatingEl] = createSignal<
-				HTMLDivElement | null | undefined
-			>(null);
+			const [referenceEl, setReferenceEl] = createSignal<HTMLDivElement | null>(
+				null,
+			);
+			const [floatingEl, setFloatingEl] = createSignal<HTMLDivElement | null>(
+				null,
+			);
 			const [visible, setVisible] = createSignal(false);
 
 			const { refs, x, y } = createFloating({
@@ -350,7 +360,7 @@ describe('createFloating', () => {
 					<div
 						data-testid="floating"
 						ref={refs.setFloating}
-						style={floatingStyles()}
+						style={{ ...floatingStyles() }}
 					/>
 				</>
 			);
@@ -384,10 +394,7 @@ describe('createFloating', () => {
 
 	it('floatingStyles default', async () => {
 		function TestComponent() {
-			const [visible, setVisible] = createSignal(true);
-			const { refs, floatingStyles } = createFloating({
-				isOpen: visible,
-			});
+			const { refs, floatingStyles } = createFloating({});
 
 			return (
 				<>
@@ -395,7 +402,7 @@ describe('createFloating', () => {
 					<div
 						data-testid="floating"
 						ref={refs.setFloating}
-						style={floatingStyles()}
+						style={{ ...floatingStyles() }}
 					/>
 				</>
 			);
@@ -435,7 +442,7 @@ describe('createFloating', () => {
 	it('middleware is always fresh and does not cause an infinite loop', async () => {
 		function TestComponent() {
 			const [arrowRef, setArrowRef] = createSignal<HTMLElement | null>(null);
-			const { refs, setFloatingStyles } = createFloating({
+			const { refs } = createFloating({
 				placement: 'right',
 				middleware: [
 					offset(),
@@ -461,8 +468,11 @@ describe('createFloating', () => {
 					hide(),
 
 					size({
-						apply({ availableHeight, elements }) {
-							setFloatingStyles({ 'max-height': `${availableHeight}px` });
+						apply({ availableHeight }) {
+							const node = refs.floating?.();
+							if (node) {
+								node.style.maxHeight = `${availableHeight}px`;
+							}
 						},
 					}),
 				],
